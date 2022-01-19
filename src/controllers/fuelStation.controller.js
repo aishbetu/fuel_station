@@ -89,4 +89,20 @@ exports.deleteStation = (req, res) => {
 
 
 // fetch top 3 nearby stations from user location
-// TO DO
+exports.getNearestStations = (req, res) => {
+    const x_cordinate = req.params.long; // x -> Longitude
+    const y_cordinate = req.params.lat; // y -> Latitude
+
+    // split str to = then parse it to float
+    const xCordinateNumber = parseFloat(x_cordinate.split("=").pop());
+    const yCordinateNumber = parseFloat(y_cordinate.split("=").pop());
+
+    // pass these co-ordinates to model method to get results
+    StationModel.findNearbyStations(xCordinateNumber, yCordinateNumber, (err, stations) => {
+        if (err) {
+            res.status(400).send(err);
+        }
+        console.log(stations);
+        res.status(200).send({success: true, message: 'Station has been deleted successfully', data: stations});
+    })
+}

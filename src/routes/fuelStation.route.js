@@ -18,6 +18,10 @@ router.put('/:id', StationController.updateFuelPrice);
 // delete station
 router.delete('/:id', StationController.deleteStation);
 
+
+// get nearest stations route
+router.get('/find/:lat/:long', StationController.getNearestStations);
+
 module.exports = router;
 
 

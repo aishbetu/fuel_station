@@ -73,4 +73,17 @@ Stations.removeStation = (id, result) => {
     });
 }
 
+Stations.findNearbyStations = (xCordinateNumber, yCordinateNumber, result) => {
+    dbConn.query('SELECT station_name, ( 6371 * acos( cos( radians(?) ) * cos( radians( y_coordinate ) ) * cos( radians( x_coordinate ) - radians(?) ) + sin( radians(?) ) * sin( radians( y_coordinate ) ) ) ) AS distance FROM stations HAVING distance < 900 ORDER BY distance LIMIT 0 , 3',
+        [yCordinateNumber, xCordinateNumber, yCordinateNumber], (err, res) => {
+        if (err) {
+            console.log('Error while finding nearest stations');
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+
+        });
+}
+
 module.exports = Stations;
