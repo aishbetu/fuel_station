@@ -12,6 +12,12 @@ router.get('/', StationController.getStationsList);
 // post station route
 router.post('/', StationController.createStation);
 
+// put route update fuel price
+router.put('/:id', StationController.updateFuelPrice);
+
+// delete station
+router.delete('/:id', StationController.deleteStation);
+
 module.exports = router;
 
 

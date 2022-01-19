@@ -13,7 +13,7 @@ Stations.getAllStations = (result) => {
     dbConn.query('SELECT * FROM stations', (err, res) => {
         if (err){
             console.log('Error while fetching stations', err);
-            result(null, err);
+            result(err, null);
         } else {
             console.log('Stations fetched successfully');
             result(null, res)
@@ -21,25 +21,56 @@ Stations.getAllStations = (result) => {
     })
 }
 
+// Stations.findStationName = (station_name, result) => {
+//     dbConn.query('SELECT id FROM stations WHERE station_name=?', [station_name], (err, res) => {
+//         if (err) {
+//             console.log('Error while fetching names');
+//             result(err, null);
+//         } else {
+//             console.log('Station found successfully');
+//             result(null, res);
+//         }
+//     });
+// }
+
 // create new fuel station in db
 Stations.addNewStation = (stationReqData, result) => {
     dbConn.query('INSERT INTO stations SET ? ', stationReqData, (err, res) => {
         if (err) {
-            console.log('Error while inserting station', err);
+            // if (err.error == 1062) {
+            //     console.log('Error while inserting station', err);
+            //     return result(err, null);
+            // }
             result(err, null);
         }else {
             console.log('Station inserted successfully');
             result(null, res);
         }
-
-        // try {
-        //     console.log('Station inserted successfully');
-        //     result(null, res);
-        // }catch (err) {
-        //     console.log('error occurred' + err);
-        //     result(err, null);
-        // }
     })
+}
+
+// update fuel price
+Stations.editFuelPrice = (id, fuelReqData, result) => {
+    dbConn.query('UPDATE stations SET fuel_price=? WHERE id=?', [fuelReqData.fuel_price, id], (err, res) => {
+        if (err) {
+            console.log("Error while updating fuel price", err);
+            result(err, null);
+        } else {
+            console.log('Fuel price has been updated successfully!');
+            result(null, res);
+        }
+    });
+}
+
+Stations.removeStation = (id, result) => {
+    dbConn.query('DELETE FROM stations WHERE id=?', [id], (err, res) => {
+        if (err) {
+            console.log('Error while deleting the station!');
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
 }
 
 module.exports = Stations;
