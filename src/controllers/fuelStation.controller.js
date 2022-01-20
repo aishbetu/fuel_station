@@ -8,10 +8,10 @@ exports.getStationsList = (req, res) => {
     StationModel.getAllStations((err, stations) => {
         console.log('We are here');
         if (err) {
-            res.send(err);
+            return res.status(500).send(err);
         }
         console.log('Stations:', stations);
-        res.send(stations);
+        res.status(200).send(stations);
     });
 }
 
@@ -21,15 +21,15 @@ exports.createStation = (req, res) => {
     const stationReqData = new StationModel(req.body);
     // validating if input in not undefined
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
-        res.status(400).send({success: false, message: 'please fill all fields'})
+        return res.status(400).send({success: false, message: 'please fill all fields'})
     }
     // validating if x co-ordinate
     if ((req.body.x_coordinate < -180) || (req.body.x_coordinate > 180)){
-        res.status(400).send({success: false, message: 'X co-ordinate is not valid'});
+        return res.status(400).send({success: false, message: 'X co-ordinate is not valid'});
     }
     // validating if y co-ordinate
     if ((req.body.y_coordinate < -90) || (req.body.y_coordinate > 90)) {
-        res.status(400).send({success: false, message: 'Y co-ordinate is not valid'});
+        return res.status(400).send({success: false, message: 'Y co-ordinate is not valid'});
     }
     // sending data to model to save in db
     else {
@@ -38,9 +38,9 @@ exports.createStation = (req, res) => {
             if (err){
                 if (err.errno == 1062) {
                     // console.log("Error occurred!!");
-                    return res.status(400).send(err.code);
+                    return res.status(406).send(err.code);
                 }
-                return res.status(400).send(err);
+                return res.status(500).send(err);
             }
             res.status(201).send({success: true, message: 'Station has been inserted successfully', data: station});
         });
@@ -52,21 +52,21 @@ exports.updateFuelPrice = (req, res) => {
     const fuelReqData = new StationModel(req.body);
     // validating if input empty
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
-        res.status(400).send({success: false, message: 'please fill fuel price field'})
+        return res.status(400).send({success: false, message: 'please fill fuel price field'})
     }
     const { station_name, x_coordinate, y_coordinate, fuel_price } = req.body;
 
     // validating for only fuel price can be updated
     if (fuel_price && req.params.id) {
         if (station_name || x_coordinate || y_coordinate) {
-            res.status(400).send({success: false, message: 'only fuel price can be updated! '});
+            return res.status(400).send({success: false, message: 'only fuel price can be updated! '});
         }
         else {
             StationModel.editFuelPrice(req.params.id, fuelReqData, (err, fuel) => {
                 if (err) {
-                    res.send(err);
+                    return res.status(500).send(err);
                 }
-                res.status(201).send({success: true, message: 'fuel price has been updated successfully', data: fuel});
+                res.status(200).send({success: true, message: 'fuel price has been updated successfully', data: fuel});
             })
 
         }
@@ -77,11 +77,11 @@ exports.updateFuelPrice = (req, res) => {
 // delete station
 exports.deleteStation = (req, res) => {
     if (!req.params.id) {
-        res.status(400).send({success: false, message: 'Please provide station id'});
+        return res.status(400).send({success: false, message: 'Please provide station id'});
     }
     StationModel.removeStation(req.params.id, (err, station) => {
         if (err) {
-            res.status(400).send(err);
+            return res.status(500).send(err);
         }
         res.status(200).send({success: true, message: 'Station has been deleted successfully', data: station});
     })
@@ -90,6 +90,9 @@ exports.deleteStation = (req, res) => {
 
 // fetch top 3 nearby stations from user location
 exports.getNearestStations = (req, res) => {
+    if (!req.params.long || !req.params.lat) {
+        return res.status(400).send({message: 'Please provide latitude and longitude both'});
+    }
     const x_cordinate = req.params.long; // x -> Longitude
     const y_cordinate = req.params.lat; // y -> Latitude
 
@@ -100,7 +103,7 @@ exports.getNearestStations = (req, res) => {
     // pass these co-ordinates to model method to get results
     StationModel.findNearbyStations(xCordinateNumber, yCordinateNumber, (err, stations) => {
         if (err) {
-            res.status(400).send(err);
+            return res.status(500).send(err);
         }
         console.log(stations);
         res.status(200).send({success: true, message: 'Station has been deleted successfully', data: stations});
