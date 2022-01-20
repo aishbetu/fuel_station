@@ -17,11 +17,28 @@ exports.getStationsList = (req, res) => {
 
 exports.createStation = (req, res) => {
     console.log('create new station');
-    // console.log(req.body);
-    const stationReqData = new StationModel(req.body);
+
+    // trimming co-ordinates till 4 decimal
+    const newLat = parseFloat(req.body.y_coordinate.toFixed(4));
+    const newLong = parseFloat(req.body.x_coordinate.toFixed(4));
+
+    // passing trimmed co-ordinates with original name & price
+    const stationObj = {
+        station_name: req.body.station_name,
+        x_coordinate: newLong,
+        y_coordinate: newLat,
+        fuel_price: req.body.fuel_price
+    };
+
+    const stationReqData = new StationModel(stationObj);
     // validating if input in not undefined
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
-        return res.status(400).send({success: false, message: 'please fill all fields'})
+        return res.status(400).send({success: false, message: 'Please fill all fields'})
+    }
+
+    // validating name must not be number
+    if (!isNaN(req.body.station_name)) {
+        return res.status(400).send({success: false, message: 'Station name can only be string!'})
     }
     // validating if x co-ordinate
     if ((req.body.x_coordinate < -180) || (req.body.x_coordinate > 180)){
