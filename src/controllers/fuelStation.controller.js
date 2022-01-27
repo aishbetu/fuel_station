@@ -90,6 +90,9 @@ exports.updateFuelPrice = (req, res) => {
         if (station_name || x_coordinate || y_coordinate) {
             return res.status(400).send({success: false, message: 'only fuel price can be updated! '});
         }
+        if (fuel_price < 0) {
+            return res.status(400).send({success: false, message: 'fuel price can not be negative'});
+        }
         else {
             StationModel.editFuelPrice(req.params.id, fuelReqData, (err, fuel) => {
                 if (err) {
