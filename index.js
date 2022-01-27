@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 
-// local imports
 const stationRoutes = require('./src/routes/fuelStation.route');
 
 const app = express();
@@ -16,9 +15,10 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.get('/', (req, res) => {
-    res.send('Hello Node Bro');
+    res.send('Hello Node');
 });
 
+// adding route module for fuel stations
 app.use('/api/v1/stations', stationRoutes);
 
 app.listen(PORT, () => {

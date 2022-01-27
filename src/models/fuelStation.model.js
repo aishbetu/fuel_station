@@ -7,8 +7,7 @@ const Stations = function (station){
     this.fuel_price = station.fuel_price;
 }
 
-// get all stations
-// // // // result is callback function
+// method to fetch all fuel stations
 Stations.getAllStations = (result) => {
     dbConn.query('SELECT * FROM stations', (err, res) => {
         if (err){
@@ -21,26 +20,11 @@ Stations.getAllStations = (result) => {
     })
 }
 
-// Stations.findStationName = (station_name, result) => {
-//     dbConn.query('SELECT id FROM stations WHERE station_name=?', [station_name], (err, res) => {
-//         if (err) {
-//             console.log('Error while fetching names');
-//             result(err, null);
-//         } else {
-//             console.log('Station found successfully');
-//             result(null, res);
-//         }
-//     });
-// }
 
-// create new fuel station in db
+// method to create new fuel station in db
 Stations.addNewStation = (stationReqData, result) => {
     dbConn.query('INSERT INTO stations SET ? ', stationReqData, (err, res) => {
         if (err) {
-            // if (err.error == 1062) {
-            //     console.log('Error while inserting station', err);
-            //     return result(err, null);
-            // }
             result(err, null);
         }else {
             console.log('Station inserted successfully');
@@ -49,7 +33,7 @@ Stations.addNewStation = (stationReqData, result) => {
     })
 }
 
-// update fuel price
+// method to update fuel price
 Stations.editFuelPrice = (id, fuelReqData, result) => {
     dbConn.query('UPDATE stations SET fuel_price=? WHERE id=?', [fuelReqData.fuel_price, id], (err, res) => {
         if (err) {
@@ -62,6 +46,7 @@ Stations.editFuelPrice = (id, fuelReqData, result) => {
     });
 }
 
+// method to delete an station from db
 Stations.removeStation = (id, result) => {
     dbConn.query('DELETE FROM stations WHERE id=?', [id], (err, res) => {
         if (err) {
@@ -73,7 +58,9 @@ Stations.removeStation = (id, result) => {
     });
 }
 
+// method to fetch nearest fuel stations from db
 Stations.findNearbyStations = (xCordinateNumber, yCordinateNumber, result) => {
+    // Using Haversine Formula to calculate nearest stations from user distance
     dbConn.query('SELECT station_name, ( 6371 * acos( cos( radians(?) ) * cos( radians( y_coordinate ) ) * cos( radians( x_coordinate ) - radians(?) ) + sin( radians(?) ) * sin( radians( y_coordinate ) ) ) ) AS distance FROM stations HAVING distance < 900 ORDER BY distance LIMIT 0 , 3',
         [yCordinateNumber, xCordinateNumber, yCordinateNumber], (err, res) => {
         if (err) {

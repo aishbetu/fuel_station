@@ -9,17 +9,17 @@ const StationController = require('../controllers/fuelStation.controller');
 // route to get all stations
 router.get('/', StationController.getStationsList);
 
-// post station route
+// route to post station
 router.post('/', StationController.createStation);
 
-// put route update fuel price
+// route update fuel price
 router.put('/:id', StationController.updateFuelPrice);
 
-// delete station
+// route to delete station
 router.delete('/:id?', StationController.deleteStation);
 
 
-// get nearest stations route
+// route to get nearest stations route
 router.get('/find/:lat?/:long?', StationController.getNearestStations);
 
 module.exports = router;
